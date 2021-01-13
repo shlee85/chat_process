@@ -1,4 +1,19 @@
 #include "header.h"
+//#include "stdio.h"
+#include <cstdio>
+
+int DataProc(int clntfd)
+{
+	char 	sbuf[1024] = {0,};
+
+	snprintf(sbuf, 1024-1, "HI SHLEE TEST PROGRAM");
+	
+	cout << "Send Buf : " << sbuf << endl;
+
+	send(clntfd, sbuf, strlen(sbuf), 0);
+
+	return 1;
+}
 
 int SocketTools::Serv_Connect()
 {
@@ -28,15 +43,20 @@ int SocketTools::Serv_Connect()
 
 		return -1;
 	}
+
 	cout << "Client Connect OK" << endl;
-	return 1;
+	
+	return serv_sock;
 }
 
 int main(int argc, char* argv[])
 {
+	int clntfd;
+
 	SocketTools socket;
 
-	socket.Serv_Connect();
-	
+	clntfd = socket.Serv_Connect();
+	DataProc(clntfd);
+
 	return 1;
 }

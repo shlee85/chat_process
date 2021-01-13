@@ -2,6 +2,7 @@
 #define _HEADER_H_
 
 #include <iostream>
+#include <cstdio>
 #include <vector>
 #include <string.h>
 #include <stdlib.h>
@@ -9,8 +10,10 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <pthread.h>
 
 using namespace std;
 
@@ -33,6 +36,8 @@ public:
 typedef struct {
 	int servfd;
 	int clntfd;
+
+	pthread_t tid[MAX_CLNT];
 }t_HANDLE;
 
 

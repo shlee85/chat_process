@@ -12,7 +12,7 @@ OBJS += $(foreach SRCS, $(SRCS), $(SRCS:.cpp=.o))
 
 TARGET=chatd
 
-CPPFLAGS= -Wno-write-string -std=c++11
+CPPFLAGS= -lpthread -Wno-write-string -std=c++11
 
 LIBS=
 LIB_DIRS=
@@ -37,7 +37,7 @@ all chat_process: $(TARGET)
 	#$(CPP) $(CPPFLAGS) -c $< -o $@ #compile
 
 $(TARGET) : $(OBJS)
-	$(CPP) $(OBJS) -o $@
+	$(CPP) $(OBJS) $(CPPFLAGS) -o $@
 
 clean:
 	rm -rf $(TARGET)

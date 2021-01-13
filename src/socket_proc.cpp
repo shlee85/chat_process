@@ -37,6 +37,10 @@ int SocketTools::ServSockOpen()
 
 	SockOpt(serv_sock);
 
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv_addr.sin_port = htons(SERV_PORT);
+
 	if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1){
 		cout << "bind() error" << endl;
 		cout << " : " << strerror(errno) << endl;

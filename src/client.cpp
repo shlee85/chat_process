@@ -4,13 +4,19 @@
 
 int DataProc(int clntfd)
 {
-	char 	sbuf[1024] = {0,};
+	char 	sbuf[1024] 	= {0,};
+	int 	ret 		= 0;
 
-	snprintf(sbuf, 1024-1, "HI SHLEE TEST PROGRAM");
-	
-	cout << "Send Buf : " << sbuf << endl;
+	while(1){
+		cout << "IN -> ";
+		cin.getline(sbuf, 1024); //공백을 포함시킨다. cin은 공백시 해당 문자열 입력 종료로 받아 들인다.
+		//snprintf(sbuf, 1024-1, "HI SHLEE TEST PROGRAM");
+		
+		cout << "Send Buf : (" << sbuf << ")" << endl;
 
-	send(clntfd, sbuf, strlen(sbuf), 0);
+		ret = write(clntfd, sbuf, strlen(sbuf));
+		cout << "send ret is " << ret << endl;
+	}
 
 	return 1;
 }

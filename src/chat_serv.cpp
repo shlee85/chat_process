@@ -1,5 +1,12 @@
 #include "header.h"
 
+/*
+	앞으로 추가할 사항.
+	1. 멀티 쓰레드를 위한 쓰레드ID관리.
+	1-1. pthread_cancel, pthread_exit 차이점.
+	2. 멀티 서버를 위한 클라이언트FD관리.
+*/
+
 t_HANDLE g_handle;
 
 //소켓초기화 및 클라이언트 관리 초기화.
@@ -21,14 +28,39 @@ int DataProc()
 }
 
 int gidx;
+pthread_t thrid;
 void *t_func(void *data)
 {
-	char 	rbuf[1024] = {0,};
+	static int retval = 0;
+
+	char 	rbuf[1024] 	= {0,};
+	int		ret 		= 0;
 
 	cout << "Thread " << gidx << endl;
 
-	read(g_handle.clntfd, rbuf, sizeof(rbuf));
-	cout << "Read Data : " << rbuf << endl;
+	//pthread_cancel()요청이 발생 하면 바로 종료 할 수 있다. ENABLE면 해당 루틴을 다 돌고 종료 할 수 있다.
+	//pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL); 
+
+	while(1){
+		ret = read(g_handle.clntfd, rbuf, sizeof(rbuf));
+		cout << "ret is " << ret << "  strerror : " << strerror(errno) << endl;
+		if(ret == 0){ //우아한 종료
+			cout << "Client Closed" << endl;
+			close(g_handle.clntfd);
+		
+			cout << "tid : " << g_handle.tid[0] << ", thrid : " << thrid << endl;
+			//pthread_cancel(thrid);
+			pthread_exit((void*)&retval);
+		}
+		else if(ret < 0){
+			cout << "read fail : " << ret << " : " << strerror(errno) << endl;
+			//continue;
+		}
+		cout << "Read Data : " << rbuf << endl;
+
+		memset(rbuf, 0, sizeof(rbuf));
+		sleep(1);
+	}
 }
 
 int MainLoop()
@@ -39,6 +71,7 @@ int MainLoop()
 	
 	int		maxfd;
 	int 	idx = 0;
+	int		thr_ret;
 
 	maxfd = g_handle.servfd;
 
@@ -65,16 +98,19 @@ int MainLoop()
 			cout << "접속!!" << endl;
 
 			gidx = idx;
-			pthread_create(&g_handle.tid[idx], NULL, t_func, NULL);
+			thr_ret = pthread_create(&g_handle.tid[idx], NULL, t_func, NULL);
+			thrid = g_handle.tid[idx];
 			idx++;
+			pthread_join(thrid, NULL);
 
 			FD_SET(g_handle.clntfd, &readfds);
 			cout << endl;
 		}
 
-
 		sleep(1);
 	}
+	cout << "MainLoop Exit" << endl;
+
 	return 1;
 }
 

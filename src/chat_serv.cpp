@@ -66,6 +66,7 @@ void *t_func(void *data)
 int MainLoop()
 {
 	SocketTools Sock;
+	cThreadDirect cThrManager;	//클래스를 호출 하면서 동시에 생성자 초기화를 진행 한다.
 
 	fd_set 	allfds, readfds;
 	
@@ -94,14 +95,23 @@ int MainLoop()
 		//서버 소켓의 변화가 있는 경우 동작.
 		if(FD_ISSET(g_handle.servfd, &allfds)){
 			g_handle.clntfd = Sock.ClntAccept(g_handle.servfd);
-
-			cout << "접속!!" << endl;
-
+		
+			cout << "접속처리 완료!!" << endl;
 			gidx = idx;
+
 			thr_ret = pthread_create(&g_handle.tid[idx], NULL, t_func, NULL);
 			thrid = g_handle.tid[idx];
+
+			/*
+			유저 정보를 관리 하는 클래스 함수 추가.
+				CurrClntCnt++; //현재 클라이언트 개수 체크.
+			*/
+			cThrManager.AddUserInfo(g_handle.clntfd, thrid, gidx); //접속 처리 된 유저 정보를 등록
+			cout << endl << endl;
+			cThrManager.StatusUserInfo();
+
 			idx++;
-			pthread_join(thrid, NULL);
+//			pthread_join(thrid, NULL);
 
 			FD_SET(g_handle.clntfd, &readfds);
 			cout << endl;

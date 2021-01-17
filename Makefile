@@ -5,7 +5,8 @@ DIR_SRCS = $(TOP)/src
 
 SRCS +=\
 	$(DIR_SRCS)/chat_serv.cpp\
-	$(DIR_SRCS)/socket_proc.cpp
+	$(DIR_SRCS)/socket_proc.cpp\
+	$(DIR_SRCS)/user_info.cpp
 
 #OBJS += $(foreach SRCS, $(SRCS), $(DIR_OBJS)/$(SRCS:.cpp=.o))
 OBJS += $(foreach SRCS, $(SRCS), $(SRCS:.cpp=.o))
